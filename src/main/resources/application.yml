@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/Backend-Wakanda-API-Central?serverTimezone=UTC
+    url: jdbc:mysql://localhost:3306/Backend-Wakanda-Gobierno?serverTimezone=UTC
     username: root
     password: <<YOUR_PASSWORD>> # Cambia por tu contrase?a
     hikari:

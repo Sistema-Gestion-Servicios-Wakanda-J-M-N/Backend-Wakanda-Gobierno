@@ -7,7 +7,7 @@
 		<relativePath/>
 	</parent>
 	<groupId>org.main_java</groupId>
-	<artifactId>Backend-Wakanda-API-Central</artifactId>
+	<artifactId>Backend-Wakanda-Gobierno</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>war</packaging>
 	<name>Springboot</name>

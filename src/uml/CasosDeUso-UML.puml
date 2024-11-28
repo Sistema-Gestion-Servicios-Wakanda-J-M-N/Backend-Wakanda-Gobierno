@@ -1,0 +1,36 @@
+@startuml
+left to right direction
+
+actor Usuario
+
+package Gestion_de_Sugerencias {
+    usecase "Mostrar Sugerencia" as UC1
+    usecase "Revisar Estado de Sugerencias" as UC2
+    usecase "Visualizar Sugerencias" as UC5
+}
+
+package Gestion_de_Proyectos {
+    usecase "Crear Proyecto Local" as UC3
+    usecase "Consultar Proyectos Locales" as UC4
+
+}
+
+package Gestion_de_Tramites {
+    usecase "Iniciar Tramite" as UC6
+    usecase "Consultar Estado de Tramite" as UC7
+}
+
+
+Usuario --> UC4
+Usuario --> UC6
+Usuario --> UC7
+Usuario --> UC5
+
+UC1 --> UC2
+UC6 --> UC7
+
+Sistema --> UC1
+Sistema --> UC3
+
+
+@enduml

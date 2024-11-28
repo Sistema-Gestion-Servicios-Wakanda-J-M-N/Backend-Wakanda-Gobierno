@@ -1,0 +1,44 @@
+@startuml
+autonumber
+
+== Consultar Proyectos Locales ==
+
+actor Usuario
+participant GobernanzaDigital
+participant ProyectoLocal
+
+Usuario -> GobernanzaDigital: Consultar proyectos locales
+GobernanzaDigital -> ProyectoLocal: Recuperar lista de proyectos
+ProyectoLocal -> GobernanzaDigital: Devolver detalles de proyectos
+GobernanzaDigital -> Usuario: Mostrar lista de proyectos locales
+
+== Visualizar Sugerencias ==
+
+actor Usuario
+participant Sistema
+participant GestorSugerencias
+participant Sugerencia
+
+Usuario -> Sistema: Solicitar visualización de sugerencias
+Sistema -> GestorSugerencias: Obtener sugerencias activas
+GestorSugerencias -> Sugerencia: Recuperar detalles de sugerencias
+GestorSugerencias -> Sistema: Devolver datos de sugerencias
+Sistema -> Usuario: Mostrar sugerencias disponibles
+
+== Gestionar Trámites ==
+
+actor Usuario
+participant GobernanzaDigital
+participant Trámite
+
+Usuario -> GobernanzaDigital: Iniciar trámite (tipo, detalles)
+GobernanzaDigital -> Trámite: Crear nuevo trámite
+Trámite -> GobernanzaDigital: Confirmar creación
+GobernanzaDigital -> Usuario: Confirmar inicio del trámite
+
+Usuario -> GobernanzaDigital: Consultar estado de trámite
+GobernanzaDigital -> Trámite: Obtener estado del trámite
+Trámite -> GobernanzaDigital: Devolver estado
+GobernanzaDigital -> Usuario: Mostrar estado del trámite
+
+@enduml

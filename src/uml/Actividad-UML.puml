@@ -1,0 +1,27 @@
+@startuml
+start
+
+:Inicio;
+if ("¿Qué desea hacer?") then (Consultar Proyectos Locales)
+    :Usuario solicita lista de proyectos;
+    :GobernanzaDigital consulta ProyectoLocal;
+    :Mostrar lista de proyectos al Usuario;
+elseif (Visualizar Sugerencias)
+    :Usuario solicita ver sugerencias;
+    :Sistema obtiene sugerencias activas desde GestorSugerencias;
+    :Mostrar sugerencias al Usuario;
+elseif (Gestionar Trámites)
+    if ("¿Iniciar Trámite?") then (Sí)
+        :Usuario envía datos para nuevo trámite;
+        :GobernanzaDigital registra el trámite;
+        :Confirmar inicio del trámite al Usuario;
+    else (Consultar Estado de Trámite)
+        :Usuario consulta estado de trámite;
+        :GobernanzaDigital obtiene estado desde Trámite;
+        :Mostrar estado del trámite al Usuario;
+    endif
+endif
+
+:Fin;
+stop
+@enduml

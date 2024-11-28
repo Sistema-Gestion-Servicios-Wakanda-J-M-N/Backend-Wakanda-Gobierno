@@ -1,0 +1,93 @@
+@startuml
+
+package Auth-Token {
+
+     class Usuario {
+        - Long id
+        - String nombre
+        - String apellido
+        - String email
+        - Credenciales credenciales
+        - List<String> roles // Rol específico para cada microservicio
+    }
+
+    class Credenciales {
+        - Long id
+        - String correo
+        - String password
+        - Usuario usuario
+    }
+}
+
+class GestorSugerencias {
+    - Long id
+    - List<Sugerencia> sugerencias
+    - Date fechaCreacion
+    - String estado // 'ACTIVO', 'INACTIVO'
+}
+
+class Sugerencia {
+    - Long id
+    - String descripcion
+    - Date fechaEnvio
+    - String estado // 'ENVIADA', 'REVISADA', 'APROBADA', 'RECHAZADA'
+    - Usuario usuario
+}
+
+class ProyectoLocal {
+    - Long id
+    - String nombre
+    - String descripcion
+    - Date fechaInicio
+    - Date fechaFin
+    - String estado // 'PROPUESTO', 'EN PROGRESO', 'COMPLETADO'
+    - List<Presupuesto> presupuestos
+    - List<Fase> fases
+    - List<Sugerencia> sugerencias
+}
+
+class Fase {
+    - Long id
+    - String nombre
+    - String descripcion
+    - Date fechaInicio
+    - Date fechaFin
+    - String estado // 'PENDIENTE', 'EN PROGRESO', 'FINALIZADA'
+    - Presupuesto presupuesto
+}
+
+class Presupuesto {
+    - Long id
+    - String categoria
+    - Double montoAsignado
+    - Double montoGastado
+}
+
+class Trámite {
+    - Long id
+    - String tipo // 'REGISTRO', 'PERMISO', 'SOLICITUD'
+    - Usuario usuario
+    - String estado // 'EN PROCESO', 'FINALIZADO', 'RECHAZADO'
+    - Date fechaSolicitud
+    - Date fechaResolucion
+}
+
+class GobernanzaDigital {
+    - Long id
+    - List<Trámite> tramites
+    - List<ProyectoLocal> proyectosLocales
+    - GestorSugerencias gestorSugerencias
+}
+
+
+Usuario "1" -- "1" Credenciales
+Usuario "1" -- "0..*" Trámite
+Usuario "1" -- "0..*" Sugerencia
+GestorSugerencias "1" -- "0..*" Sugerencia
+ProyectoLocal "1" -- "0..*" Presupuesto
+ProyectoLocal "1" -- "0..*" Fase
+Fase "1" -- "1" Presupuesto
+GobernanzaDigital "1" -- "0..*" ProyectoLocal
+GobernanzaDigital "1" -- "1" GestorSugerencias
+
+@enduml

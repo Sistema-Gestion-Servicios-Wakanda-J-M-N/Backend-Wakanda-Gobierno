@@ -55,8 +55,9 @@ public class UsuarioService {
         usuarioDTO.setNombre(usuario.getNombre());
         usuarioDTO.setApellidos(usuario.getApellidos());
         usuarioDTO.setEmail(usuario.getEmail());
-        usuarioDTO.setRoles(usuario.getRoles());
-        usuarioDTO.setCredencialesId(usuario.getCredenciales() != null ? usuario.getCredenciales().getId() : null);
+        usuarioDTO.setCredencialesId(
+                usuario.getCredenciales() != null ? usuario.getCredenciales().getId() : null
+        );
         return usuarioDTO;
     }
 
@@ -64,8 +65,6 @@ public class UsuarioService {
         usuario.setNombre(usuarioDTO.getNombre());
         usuario.setApellidos(usuarioDTO.getApellidos());
         usuario.setEmail(usuarioDTO.getEmail());
-        usuario.setRoles(usuarioDTO.getRoles());
         return usuario;
     }
 }
-

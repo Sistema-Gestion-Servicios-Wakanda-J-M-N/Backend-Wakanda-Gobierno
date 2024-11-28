@@ -2,7 +2,9 @@ package org.example.backendwakandagobierno.service.gobernanza;
 
 import org.example.backendwakandagobierno.domain.gobernanza.GobernanzaDigital;
 import org.example.backendwakandagobierno.model.gobernanza.GobernanzaDigitalDTO;
+import org.example.backendwakandagobierno.model.proyectos.ProyectoLocalDTO;
 import org.example.backendwakandagobierno.repos.GobernanzaDigitalRepository;
+import org.example.backendwakandagobierno.repos.ProyectoLocalRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,43 +13,64 @@ import java.util.stream.Collectors;
 @Service
 public class GobernanzaDigitalService {
 
-    private final GobernanzaDigitalRepository gobernanzaDigitalRepository;
 
-    public GobernanzaDigitalService(final GobernanzaDigitalRepository gobernanzaDigitalRepository) {
+    private final GobernanzaDigitalRepository gobernanzaDigitalRepository;
+    private final ProyectoLocalRepository proyectoLocalRepository;
+
+
+    public GobernanzaDigitalService(final GobernanzaDigitalRepository gobernanzaDigitalRepository,
+                                    final ProyectoLocalRepository proyectoLocalRepository) {
         this.gobernanzaDigitalRepository = gobernanzaDigitalRepository;
+        this.proyectoLocalRepository = proyectoLocalRepository;
     }
+
+
 
     public List<GobernanzaDigitalDTO> findAll() {
         return gobernanzaDigitalRepository.findAll().stream()
-                .map(gobernanza -> mapToDTO(gobernanza, new GobernanzaDigitalDTO()))
+                .map(this::mapToDTO)
                 .collect(Collectors.toList());
     }
 
+
+
     public GobernanzaDigitalDTO get(final Long id) {
         return gobernanzaDigitalRepository.findById(id)
-                .map(gobernanza -> mapToDTO(gobernanza, new GobernanzaDigitalDTO()))
+                .map(this::mapToDTO)
                 .orElseThrow(() -> new RuntimeException("Gobernanza Digital no encontrada con ID: " + id));
     }
 
-    public Long create(final GobernanzaDigitalDTO dto) {
-        final GobernanzaDigital gobernanza = mapToEntity(dto, new GobernanzaDigital());
-        return gobernanzaDigitalRepository.save(gobernanza).getId();
+
+
+    // Nuevo: Listar todos los proyectos locales gestionados
+    public List<ProyectoLocalDTO> listarProyectos(Long gobernanzaId) {
+        GobernanzaDigital gobernanza = gobernanzaDigitalRepository.findById(gobernanzaId)
+                .orElseThrow(() -> new RuntimeException("Gobernanza no encontrada con ID: " + gobernanzaId));
+
+        return gobernanza.getProyectosLocales().stream()
+                .map(proyecto -> {
+                    ProyectoLocalDTO dto = new ProyectoLocalDTO();
+                    dto.setId(proyecto.getId());
+                    dto.setNombre(proyecto.getNombre());
+                    return dto;
+                })
+                .collect(Collectors.toList());
     }
 
-    private GobernanzaDigitalDTO mapToDTO(final GobernanzaDigital gobernanza, final GobernanzaDigitalDTO dto) {
+
+
+    private GobernanzaDigitalDTO mapToDTO(final GobernanzaDigital gobernanza) {
+        GobernanzaDigitalDTO dto = new GobernanzaDigitalDTO();
         dto.setId(gobernanza.getId());
-        dto.setProyectosLocalesIds(
-                gobernanza.getProyectosLocales().stream().map(proyecto -> proyecto.getId()).collect(Collectors.toList())
-        );
-        dto.setGestorSugerenciasId(
-                gobernanza.getGestorSugerencias() != null ? gobernanza.getGestorSugerencias().getId() : null
-        );
+        dto.setGestorSugerenciasId(gobernanza.getGestorSugerencias().getId());
         return dto;
     }
 
+
+
     private GobernanzaDigital mapToEntity(final GobernanzaDigitalDTO dto, final GobernanzaDigital gobernanza) {
-        // Mapping básico, relaciones complejas pueden añadirse según se necesite
         return gobernanza;
     }
 }
+
 

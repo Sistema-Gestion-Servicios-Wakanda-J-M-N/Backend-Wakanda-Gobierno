@@ -1,6 +1,7 @@
 package org.example.backendwakandagobierno.rest;
 
 import org.example.backendwakandagobierno.model.usuarios.UsuarioDTO;
+import org.example.backendwakandagobierno.service.usuarios.UsuarioService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

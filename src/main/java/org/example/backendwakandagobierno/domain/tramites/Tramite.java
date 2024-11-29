@@ -15,7 +15,7 @@ import java.util.Date;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Trámite {
+public class Tramite {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

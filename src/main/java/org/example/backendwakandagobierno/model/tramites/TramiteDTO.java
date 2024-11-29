@@ -9,7 +9,7 @@ import java.util.Date;
 
 @Getter
 @Setter
-public class TrámiteDTO {
+public class TramiteDTO {
 
     private Long id;
 

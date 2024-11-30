@@ -1,8 +1,6 @@
 package org.example.backendwakandagobierno.service.gobernanza;
 
 import org.example.backendwakandagobierno.aop.anotaciones.Auditable;
-import org.example.backendwakandagobierno.aop.anotaciones.Metrics;
-import org.example.backendwakandagobierno.aop.anotaciones.Secure;
 import org.example.backendwakandagobierno.domain.gobernanza.GobernanzaDigital;
 import org.example.backendwakandagobierno.model.gobernanza.GobernanzaDigitalDTO;
 import org.example.backendwakandagobierno.model.proyectos.ProyectoLocalDTO;
@@ -44,8 +42,6 @@ public class GobernanzaDigitalService {
     }
 
 
-    @Metrics
-    @Secure
     @Auditable
     // Nuevo: Listar todos los proyectos locales gestionados
     public List<ProyectoLocalDTO> listarProyectos(Long gobernanzaId) {

@@ -1,8 +1,6 @@
 package org.example.backendwakandagobierno.service.sugerencias;
 
 import org.example.backendwakandagobierno.aop.anotaciones.Auditable;
-import org.example.backendwakandagobierno.aop.anotaciones.Metrics;
-import org.example.backendwakandagobierno.aop.anotaciones.Secure;
 import org.example.backendwakandagobierno.domain.sugerencias.GestorSugerencias;
 import org.example.backendwakandagobierno.domain.sugerencias.Sugerencia;
 import org.example.backendwakandagobierno.model.sugerencias.GestorSugerenciasDTO;
@@ -23,7 +21,7 @@ public class GestorSugerenciasService {
     }
 
 
-    @Auditable
+
     public GestorSugerenciasDTO get(final Long id) {
         return gestorSugerenciasRepository.findById(id)
                 .map(this::mapGestorToDTO)
@@ -31,16 +29,16 @@ public class GestorSugerenciasService {
     }
 
 
+
     @Auditable
-    @Secure
     public Long create(final GestorSugerenciasDTO dto) {
         final GestorSugerencias gestor = mapToEntity(dto, new GestorSugerencias());
         return gestorSugerenciasRepository.save(gestor).getId();
     }
 
 
-    @Metrics
-    @Secure
+
+    @Auditable
     // metodo para obtener sugerencias activas
     public List<SugerenciaDTO> visualizarSugerencias(final Long gestorId) {
         GestorSugerencias gestor = gestorSugerenciasRepository.findById(gestorId)

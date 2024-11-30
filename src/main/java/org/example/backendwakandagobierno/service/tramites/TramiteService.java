@@ -1,8 +1,6 @@
 package org.example.backendwakandagobierno.service.tramites;
 
 import org.example.backendwakandagobierno.aop.anotaciones.Auditable;
-import org.example.backendwakandagobierno.aop.anotaciones.Metrics;
-import org.example.backendwakandagobierno.aop.anotaciones.Secure;
 import org.example.backendwakandagobierno.domain.tramites.Tramite;
 import org.example.backendwakandagobierno.domain.usuarios.Usuario;
 import org.example.backendwakandagobierno.model.tramites.TramiteDTO;
@@ -42,14 +40,14 @@ public class TramiteService {
 
 
 
+    @Auditable
     public Long create(final TramiteDTO dto) {
         final Tramite tramite = mapToEntity(dto, new Tramite());
         return tramiteRepository.save(tramite).getId();
     }
 
 
-    @Metrics
-    @Secure
+
     @Auditable
     // Nuevo: metodo único para iniciar trámite (más completo)
     public Long iniciarTramite(final Long usuarioId, final TramiteDTO tramiteDTO) {
@@ -66,8 +64,8 @@ public class TramiteService {
     }
 
 
-    @Metrics
-    @Secure
+
+    @Auditable
     // Nuevo: metodo único para consultar el estado del trámite
     public String consultarEstadoDelTramite(final Long tramiteId) {
         return tramiteRepository.findById(tramiteId)

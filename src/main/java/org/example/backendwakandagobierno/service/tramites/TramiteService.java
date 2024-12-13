@@ -67,13 +67,11 @@ public class TramiteService {
 
     @Auditable
     // Nuevo: metodo único para consultar el estado del trámite
-    public String consultarEstadoDelTramite(final Long tramiteId) {
+    public String consultarEstado(final Long tramiteId) {
         return tramiteRepository.findById(tramiteId)
                 .map(Tramite::getEstado)
                 .orElseThrow(() -> new RuntimeException("Trámite no encontrado con ID: " + tramiteId));
     }
-
-
 
     private TramiteDTO mapToDTO(final Tramite tramite) {
         TramiteDTO dto = new TramiteDTO();

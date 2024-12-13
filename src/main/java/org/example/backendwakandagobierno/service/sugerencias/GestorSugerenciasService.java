@@ -8,6 +8,7 @@ import org.example.backendwakandagobierno.model.sugerencias.SugerenciaDTO;
 import org.example.backendwakandagobierno.repos.GestorSugerenciasRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,8 +34,16 @@ public class GestorSugerenciasService {
     @Auditable
     public Long create(final GestorSugerenciasDTO dto) {
         final GestorSugerencias gestor = mapToEntity(dto, new GestorSugerencias());
+
+        // Asignar fecha de creación si no se ha proporcionado
+        if (gestor.getFechaCreacion() == null) {
+            gestor.setFechaCreacion(new Date());
+        }
+
+        gestor.setEstado("ACTIVO"); // Valor predeterminado para el estado
         return gestorSugerenciasRepository.save(gestor).getId();
     }
+
 
 
 

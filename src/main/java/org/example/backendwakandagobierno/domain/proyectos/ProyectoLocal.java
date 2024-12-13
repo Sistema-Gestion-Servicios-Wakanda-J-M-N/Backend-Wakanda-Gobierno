@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.example.backendwakandagobierno.domain.gobernanza.GobernanzaDigital;
 import org.example.backendwakandagobierno.domain.sugerencias.Sugerencia;
 
 import java.util.Date;
@@ -35,10 +36,14 @@ public class ProyectoLocal {
     @Column(nullable = false)
     private String estado; // 'PROPUESTO', 'EN PROGRESO', 'COMPLETADO'
 
-    @OneToMany(mappedBy = "proyecto", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Sugerencia> sugerencias;
+    @ManyToOne
+    @JoinColumn(name = "gobernanza_digital_id", nullable = false)
+    private GobernanzaDigital gobernanzaDigital;
 
     @OneToMany(mappedBy = "proyecto", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Fase> fases;
+
+    @OneToMany(mappedBy = "proyecto", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Sugerencia> sugerencias;
 }
 

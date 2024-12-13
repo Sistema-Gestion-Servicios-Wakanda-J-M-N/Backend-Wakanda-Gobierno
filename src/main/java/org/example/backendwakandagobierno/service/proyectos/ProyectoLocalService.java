@@ -1,8 +1,12 @@
 package org.example.backendwakandagobierno.service.proyectos;
 
+import jakarta.transaction.Transactional;
+import org.example.backendwakandagobierno.domain.gobernanza.GobernanzaDigital;
 import org.example.backendwakandagobierno.domain.proyectos.ProyectoLocal;
 import org.example.backendwakandagobierno.model.proyectos.ProyectoLocalDTO;
+import org.example.backendwakandagobierno.repos.GobernanzaDigitalRepository;
 import org.example.backendwakandagobierno.repos.ProyectoLocalRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,6 +16,9 @@ import java.util.stream.Collectors;
 public class ProyectoLocalService {
 
     private final ProyectoLocalRepository proyectoLocalRepository;
+
+    @Autowired
+    private GobernanzaDigitalRepository gobernanzaDigitalRepository;
 
     public ProyectoLocalService(final ProyectoLocalRepository proyectoLocalRepository) {
         this.proyectoLocalRepository = proyectoLocalRepository;
@@ -29,8 +36,20 @@ public class ProyectoLocalService {
                 .orElseThrow(() -> new RuntimeException("Proyecto no encontrado con ID: " + id));
     }
 
-    public Long create(final ProyectoLocalDTO proyectoDTO) {
-        ProyectoLocal proyecto = mapToEntity(proyectoDTO, new ProyectoLocal());
+    @Transactional
+    public Long create(final ProyectoLocalDTO proyectoDTO, final Long gobernanzaId) {
+        ProyectoLocal proyecto = new ProyectoLocal();
+        proyecto.setNombre(proyectoDTO.getNombre());
+        proyecto.setDescripcion(proyectoDTO.getDescripcion());
+        proyecto.setFechaInicio(proyectoDTO.getFechaInicio());
+        proyecto.setFechaFin(proyectoDTO.getFechaFin());
+        proyecto.setEstado(proyectoDTO.getEstado());
+
+        // Asociar el ProyectoLocal con la GobernanzaDigital
+        GobernanzaDigital gobernanza = gobernanzaDigitalRepository.findById(gobernanzaId)
+                .orElseThrow(() -> new RuntimeException("GobernanzaDigital no encontrada con ID: " + gobernanzaId));
+        proyecto.setGobernanzaDigital(gobernanza);
+
         return proyectoLocalRepository.save(proyecto).getId();
     }
 

@@ -1,5 +1,6 @@
 package org.example.backendwakandagobierno.service.tramites;
 
+import org.example.backendwakandagobierno.aop.anotaciones.Auditable;
 import org.example.backendwakandagobierno.domain.tramites.Tramite;
 import org.example.backendwakandagobierno.domain.usuarios.Usuario;
 import org.example.backendwakandagobierno.model.tramites.TramiteDTO;
@@ -39,6 +40,7 @@ public class TramiteService {
 
 
 
+    @Auditable
     public Long create(final TramiteDTO dto) {
         final Tramite tramite = mapToEntity(dto, new Tramite());
         return tramiteRepository.save(tramite).getId();
@@ -46,6 +48,7 @@ public class TramiteService {
 
 
 
+    @Auditable
     // Nuevo: metodo único para iniciar trámite (más completo)
     public Long iniciarTramite(final Long usuarioId, final TramiteDTO tramiteDTO) {
         Usuario usuario = usuarioRepository.findById(usuarioId)
@@ -62,14 +65,13 @@ public class TramiteService {
 
 
 
+    @Auditable
     // Nuevo: metodo único para consultar el estado del trámite
-    public String consultarEstadoDelTramite(final Long tramiteId) {
+    public String consultarEstado(final Long tramiteId) {
         return tramiteRepository.findById(tramiteId)
                 .map(Tramite::getEstado)
                 .orElseThrow(() -> new RuntimeException("Trámite no encontrado con ID: " + tramiteId));
     }
-
-
 
     private TramiteDTO mapToDTO(final Tramite tramite) {
         TramiteDTO dto = new TramiteDTO();

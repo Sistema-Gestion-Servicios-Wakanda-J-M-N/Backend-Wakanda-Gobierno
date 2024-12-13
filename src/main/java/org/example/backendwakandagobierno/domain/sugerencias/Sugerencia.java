@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.example.backendwakandagobierno.domain.proyectos.ProyectoLocal;
 import org.example.backendwakandagobierno.domain.usuarios.Usuario;
 
 import java.util.Date;
@@ -33,4 +34,12 @@ public class Sugerencia {
     @ManyToOne
     @JoinColumn(name = "usuario_id", nullable = false)
     private Usuario usuario;
+
+    @ManyToOne
+    @JoinColumn(name = "proyecto_id", nullable = false)
+    private ProyectoLocal proyecto;
+
+    @ManyToOne
+    @JoinColumn(name = "gestor_sugerencias_id", nullable = false)
+    private GestorSugerencias gestorSugerencias; // Propiedad agregada para la relación
 }

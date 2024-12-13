@@ -30,4 +30,3 @@ public class GestorSugerencias {
     @Column(nullable = false)
     private String estado; // 'ACTIVO', 'INACTIVO'
 }
-

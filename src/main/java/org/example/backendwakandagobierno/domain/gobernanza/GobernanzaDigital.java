@@ -1,7 +1,5 @@
 package org.example.backendwakandagobierno.domain.gobernanza;
 
-
-
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

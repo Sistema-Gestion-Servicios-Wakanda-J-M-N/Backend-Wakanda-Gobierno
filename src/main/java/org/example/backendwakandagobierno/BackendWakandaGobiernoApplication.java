@@ -3,26 +3,29 @@ package org.example.backendwakandagobierno;
 import org.example.backendwakandagobierno.model.gobernanza.GobernanzaDigitalDTO;
 import org.example.backendwakandagobierno.model.proyectos.ProyectoLocalDTO;
 import org.example.backendwakandagobierno.model.sugerencias.GestorSugerenciasDTO;
+import org.example.backendwakandagobierno.model.sugerencias.SugerenciaDTO;
 import org.example.backendwakandagobierno.model.tramites.TramiteDTO;
-import org.example.backendwakandagobierno.model.usuarios.CredencialesDTO;
 import org.example.backendwakandagobierno.model.usuarios.UsuarioDTO;
 import org.example.backendwakandagobierno.service.gobernanza.GobernanzaDigitalService;
 import org.example.backendwakandagobierno.service.proyectos.ProyectoLocalService;
 import org.example.backendwakandagobierno.service.sugerencias.GestorSugerenciasService;
 import org.example.backendwakandagobierno.service.tramites.TramiteService;
-import org.example.backendwakandagobierno.service.usuarios.CredencialesService;
 import org.example.backendwakandagobierno.service.usuarios.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 @EnableScheduling
 @SpringBootApplication
+@EnableDiscoveryClient
 public class BackendWakandaGobiernoApplication implements CommandLineRunner {
 
 	@Autowired
@@ -40,82 +43,101 @@ public class BackendWakandaGobiernoApplication implements CommandLineRunner {
 	@Autowired
 	private UsuarioService usuarioService;
 
-	@Autowired
-	private CredencialesService credencialesService;
-
 	public static void main(String[] args) {
 		SpringApplication.run(BackendWakandaGobiernoApplication.class, args);
 	}
 
 	@Override
 	public void run(String... args) {
-		System.out.println(">>> Iniciando pruebas de servicios... <<<");
+		System.out.println(">>> Iniciando creación de datos iniciales... <<<");
 
 		try {
-			UsuarioDTO nuevoUsuario = new UsuarioDTO();
-			nuevoUsuario.setNombre("Juan");
-			nuevoUsuario.setApellidos("Perez");
-			nuevoUsuario.setEmail("juan.perez@example.com");
-			nuevoUsuario.setRoles(List.of("Usuario"));
+			// Crear Usuarios
+			Long usuario1Id = crearUsuario("Pepe", "Garcia", "pepe.garcia@example.com");
+			Long usuario2Id = crearUsuario("Pepa", "Gutierrez", "pepa.gutierrez@example.com");
 
-			// 1. CREATE usuario
-			Long usuarioId = usuarioService.create(nuevoUsuario);
-			System.out.println("Usuario creado con ID: " + usuarioId);
+			// Crear Gobernanza Digital
+			Long gobernanzaId = crearGobernanzaDigital();
 
-			// GET usuario
-			UsuarioDTO usuarioObtenido = usuarioService.get(usuarioId);
-			System.out.println("Usuario obtenido: " + usuarioObtenido);
+			// Crear Proyectos Locales y asociarlos a GobernanzaDigital
+			Long proyecto1Id = crearProyectoLocal("Proyecto Vibranium", "Investigación sobre vibranium", gobernanzaId);
+			Long proyecto2Id = crearProyectoLocal("Proyecto Wakanda", "Desarrollo de infraestructura", gobernanzaId);
 
-			// UPDATE usuario
-			usuarioObtenido.setNombre("Juan Actualizado");
-			usuarioObtenido.setApellidos("Perez Actualizado");
-			usuarioService.update(usuarioId, usuarioObtenido);
-			UsuarioDTO usuarioActualizado = usuarioService.get(usuarioId);
-			System.out.println("Usuario luego de update: " + usuarioActualizado);
+			// Crear Gestor de Sugerencias
+			Long gestorId = crearGestorSugerencias();
 
-			// 2. FIND ALL usuarios
-			List<UsuarioDTO> listaUsuarios = usuarioService.findAll();
-			System.out.println("Lista de usuarios: " + listaUsuarios);
+			// Generar Sugerencias Periódicas
+			generarSugerenciasParaProyectos(gestorId, Arrays.asList(proyecto1Id, proyecto2Id), usuario1Id);
 
-			// 3. Crear una Gobernanza Digital
-			GobernanzaDigitalDTO gobernanzaDTO = new GobernanzaDigitalDTO();
-			gobernanzaDTO.setProyectosLocalesIds(List.of()); // Inicialmente sin proyectos
-			Long gobernanzaId = gobernanzaService.create(gobernanzaDTO);
-			System.out.println("Gobernanza creada con ID: " + gobernanzaId);
+			// Iniciar Trámites con un usuario
+			Long tramite1Id = iniciarTramite(usuario1Id, "REGISTRO");
+			Long tramite2Id = iniciarTramite(usuario2Id, "PERMISO");
 
-			// 4. Crear un Proyecto Local y asociarlo a GobernanzaDigital
-			ProyectoLocalDTO proyectoDTO = new ProyectoLocalDTO();
-			proyectoDTO.setNombre("Proyecto Vibranium");
-			proyectoDTO.setDescripcion("Investigación del Vibranium en Wakanda");
-			proyectoDTO.setFechaInicio(new Date());
-			proyectoDTO.setFechaFin(new Date());
-			proyectoDTO.setEstado("PROPUESTO");
+			// Consultar estado de los trámites
+			consultarEstadoTramite(tramite1Id);
+			consultarEstadoTramite(tramite2Id);
 
-			Long proyectoId = proyectoService.create(proyectoDTO, gobernanzaId);
-			System.out.println("Proyecto Local creado con ID: " + proyectoId);
-
-			// 5. Crear un Gestor de Sugerencias
-			GestorSugerenciasDTO gestorDTO = new GestorSugerenciasDTO();
-			gestorDTO.setEstado("ACTIVO");
-			Long gestorId = gestorService.create(gestorDTO);
-			System.out.println("Gestor de Sugerencias creado con ID: " + gestorId);
-
-			// 6. Iniciar un Trámite con el ID del Usuario
-			TramiteDTO tramiteDTO = new TramiteDTO();
-			tramiteDTO.setTipo("REGISTRO");
-			tramiteDTO.setFechaSolicitud(new Date());
-			Long tramiteId = tramiteService.iniciarTramite(usuarioId, tramiteDTO);
-			System.out.println("Trámite iniciado con ID: " + tramiteId + " para el Usuario ID: " + usuarioId);
-
-			// 7. Consultar estado del trámite
-			String estadoTramite = tramiteService.consultarEstado(tramiteId);
-			System.out.println("Estado del Trámite ID " + tramiteId + ": " + estadoTramite);
-
-			System.out.println(">>> Pruebas completadas exitosamente <<<");
+			System.out.println(">>> Datos iniciales creados exitosamente <<<");
 		} catch (Exception e) {
-			System.err.println("Error durante las pruebas: " + e.getMessage());
+			System.err.println("Error durante la creación de datos iniciales: " + e.getMessage());
+			e.printStackTrace();
 		}
 	}
+
+	private Long crearUsuario(String nombre, String apellido, String email) {
+		UsuarioDTO usuario = new UsuarioDTO();
+		usuario.setNombre(nombre);
+		usuario.setApellidos(apellido);
+		usuario.setEmail(email);
+		usuario.setRoles(List.of("Usuario"));
+		return usuarioService.create(usuario);
+	}
+
+	private Long crearGobernanzaDigital() {
+		GobernanzaDigitalDTO gobernanza = new GobernanzaDigitalDTO();
+		return gobernanzaService.create(gobernanza);
+	}
+
+	private Long crearProyectoLocal(String nombre, String descripcion, Long gobernanzaId) {
+		ProyectoLocalDTO proyecto = new ProyectoLocalDTO();
+		proyecto.setNombre(nombre);
+		proyecto.setDescripcion(descripcion);
+		proyecto.setFechaInicio(new Date());
+		proyecto.setFechaFin(new Date());
+		proyecto.setEstado("PROPUESTO");
+		return proyectoService.create(proyecto, gobernanzaId);
+	}
+
+	private Long crearGestorSugerencias() {
+		GestorSugerenciasDTO gestor = new GestorSugerenciasDTO();
+		gestor.setEstado("ACTIVO");
+		gestor.setFechaCreacion(new Date());
+		return gestorService.create(gestor);
+	}
+
+	private void generarSugerenciasParaProyectos(Long gestorId, List<Long> proyectosIds, Long usuarioId) {
+		proyectosIds.forEach(proyectoId -> {
+			SugerenciaDTO sugerencia = new SugerenciaDTO();
+			sugerencia.setDescripcion("Sugerencia generada automáticamente para proyecto " + proyectoId);
+			sugerencia.setFechaEnvio(new Date());
+			sugerencia.setEstado("ENVIADA");
+			sugerencia.setUsuarioId(usuarioId);
+			gestorService.visualizarSugerencias(gestorId);
+			System.out.println("Sugerencia creada para Proyecto ID: " + proyectoId);
+		});
+	}
+
+	private Long iniciarTramite(Long usuarioId, String tipo) {
+		TramiteDTO tramite = new TramiteDTO();
+		tramite.setTipo(tipo);
+		tramite.setFechaSolicitud(new Date());
+		Long tramiteId = tramiteService.iniciarTramite(usuarioId, tramite);
+		System.out.println("Trámite iniciado con ID: " + tramiteId + " para Usuario ID: " + usuarioId);
+		return tramiteId;
+	}
+
+	private void consultarEstadoTramite(Long tramiteId) {
+		String estadoTramite = tramiteService.consultarEstado(tramiteId);
+		System.out.println("Estado del Trámite ID " + tramiteId + ": " + estadoTramite);
+	}
 }
-
-

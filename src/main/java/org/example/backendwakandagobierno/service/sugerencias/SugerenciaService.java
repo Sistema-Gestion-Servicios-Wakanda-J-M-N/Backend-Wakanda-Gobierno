@@ -1,12 +1,15 @@
 package org.example.backendwakandagobierno.service.sugerencias;
 
+import jakarta.transaction.Transactional;
 import org.example.backendwakandagobierno.domain.proyectos.ProyectoLocal;
 import org.example.backendwakandagobierno.domain.sugerencias.GestorSugerencias;
 import org.example.backendwakandagobierno.domain.sugerencias.Sugerencia;
+import org.example.backendwakandagobierno.domain.usuarios.Usuario;
 import org.example.backendwakandagobierno.model.sugerencias.SugerenciaDTO;
 import org.example.backendwakandagobierno.repos.GestorSugerenciasRepository;
 import org.example.backendwakandagobierno.repos.ProyectoLocalRepository;
 import org.example.backendwakandagobierno.repos.SugerenciaRepository;
+import org.example.backendwakandagobierno.repos.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -22,6 +25,8 @@ public class SugerenciaService {
     private final SugerenciaRepository sugerenciaRepository;
     private final ProyectoLocalRepository proyectoLocalRepository;
     private final GestorSugerenciasRepository gestorSugerenciasRepository;
+    @Autowired
+    private UsuarioRepository usuarioRepository; // Necesario para obtener usuarios existentes
 
     @Autowired
     public SugerenciaService(final SugerenciaRepository sugerenciaRepository,
@@ -74,22 +79,64 @@ public class SugerenciaService {
     }
 
 
-    @Scheduled(fixedRate = 10000)
-    public void generateRandomSugerencia() {
-        Random random = new Random();
-        SugerenciaDTO dto = new SugerenciaDTO();
-        dto.setDescripcion("Descripcion " + random.nextInt(1000));
-        dto.setFechaEnvio(new Date());
-        dto.setEstado("ENVIADA");
-        dto.setUsuarioId(null); // Asignar un usuario válido si es necesario
+    // metodo con @Scheduled sin parámetros
+    @Transactional
+    @Scheduled(fixedRate = 10000) // Cada 10 segundos
+    public void generateRandomSugerenciaTask() {
+        Long proyectoId = obtenerUnProyectoIdAleatorio();
+        Long usuarioId = obtenerUnUsuarioIdAleatorio();
 
-        // Asignar un proyecto válido
-        List<ProyectoLocal> proyectos = proyectoLocalRepository.findAll();
-        if (!proyectos.isEmpty()) {
-            ProyectoLocal proyecto = proyectos.get(random.nextInt(proyectos.size()));
-            createSugerenciaForProyecto(proyecto.getId(), dto);
+        if (proyectoId != null && usuarioId != null) {
+            System.out.println("Generando sugerencia para Proyecto ID: " + proyectoId + ", Usuario ID: " + usuarioId);
+            generateRandomSugerencia(proyectoId, usuarioId);
+        } else {
+            System.out.println("No se encontraron Proyectos o Usuarios para generar sugerencias.");
         }
     }
+
+    // metodo original para generar sugerencias
+    @Transactional
+    public void generateRandomSugerencia(Long proyectoId, Long usuarioId) {
+        ProyectoLocal proyecto = proyectoLocalRepository.findById(proyectoId)
+                .orElseThrow(() -> new RuntimeException("Proyecto no encontrado con ID: " + proyectoId));
+        GestorSugerencias gestor = proyecto.getGobernanzaDigital().getGestorSugerencias();
+        Usuario usuario = usuarioRepository.findById(usuarioId)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado con ID: " + usuarioId));
+
+        Sugerencia sugerencia = new Sugerencia();
+        sugerencia.setDescripcion("Sugerencia generada aleatoriamente");
+        sugerencia.setFechaEnvio(new Date());
+        sugerencia.setEstado("ENVIADA");
+        sugerencia.setUsuario(usuario);
+        sugerencia.setProyecto(proyecto);
+        sugerencia.setGestorSugerencias(gestor);
+
+        proyecto.getSugerencias().add(sugerencia);
+        gestor.getSugerencias().add(sugerencia);
+
+        sugerenciaRepository.save(sugerencia);
+        proyectoLocalRepository.save(proyecto);
+        gestorSugerenciasRepository.save(gestor);
+
+        System.out.println("Sugerencia generada exitosamente.");
+    }
+
+    // metodo helper para obtener un ProyectoLocal ID aleatorio
+    private Long obtenerUnProyectoIdAleatorio() {
+        return proyectoLocalRepository.findAll().stream()
+                .map(ProyectoLocal::getId)
+                .findAny()
+                .orElse(null);
+    }
+
+    // metodo helper para obtener un Usuario ID aleatorio
+    private Long obtenerUnUsuarioIdAleatorio() {
+        return usuarioRepository.findAll().stream()
+                .map(Usuario::getId)
+                .findAny()
+                .orElse(null);
+    }
+
 
 
 

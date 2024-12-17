@@ -1,5 +1,6 @@
 package org.example.backendwakandagobierno.service.sugerencias;
 
+import jakarta.transaction.Transactional;
 import org.example.backendwakandagobierno.aop.anotaciones.Auditable;
 import org.example.backendwakandagobierno.domain.sugerencias.GestorSugerencias;
 import org.example.backendwakandagobierno.domain.sugerencias.Sugerencia;
@@ -47,6 +48,7 @@ public class GestorSugerenciasService {
 
 
 
+    @Transactional
     @Auditable
     // metodo para obtener sugerencias activas
     public List<SugerenciaDTO> visualizarSugerencias(final Long gestorId) {

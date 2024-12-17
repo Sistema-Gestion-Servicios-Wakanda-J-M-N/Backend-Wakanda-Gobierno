@@ -58,6 +58,13 @@ public class SugerenciaService {
     }
 
 
+    public List<SugerenciaDTO> findAllByProyectoId(Long proyectoId) {
+        return sugerenciaRepository.findByProyectoId(proyectoId).stream()
+                .map(sugerencia -> mapToDTO(sugerencia, new SugerenciaDTO()))
+                .collect(Collectors.toList());
+    }
+
+
 
     public Long createSugerenciaForProyecto(Long proyectoId, SugerenciaDTO dto) {
         ProyectoLocal proyecto = proyectoLocalRepository.findById(proyectoId)

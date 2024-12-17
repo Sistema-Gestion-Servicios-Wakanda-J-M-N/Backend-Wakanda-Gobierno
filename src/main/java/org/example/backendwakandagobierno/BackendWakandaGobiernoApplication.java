@@ -16,10 +16,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 import java.util.Date;
 import java.util.List;
 
+@EnableScheduling
 @SpringBootApplication
 public class BackendWakandaGobiernoApplication implements CommandLineRunner {
 
@@ -115,3 +117,5 @@ public class BackendWakandaGobiernoApplication implements CommandLineRunner {
 		}
 	}
 }
+
+

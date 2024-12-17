@@ -9,6 +9,8 @@ import java.util.List;
 @Repository
 public interface SugerenciaRepository extends JpaRepository<Sugerencia, Long> {
 
+    List<Sugerencia> findByProyectoId(Long proyectoId);
+
     // Encuentra sugerencias por usuario
     //List<Sugerencia> findByUsuario_Id(Long usuarioId);
 

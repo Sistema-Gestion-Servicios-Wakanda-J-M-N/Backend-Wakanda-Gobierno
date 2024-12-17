@@ -52,45 +52,21 @@ public class BackendWakandaGobiernoApplication implements CommandLineRunner {
 		System.out.println(">>> Iniciando creación de datos iniciales... <<<");
 
 		try {
-			// Crear Usuarios
-			Long usuario1Id = crearUsuario("Pepe", "Garcia", "pepe.garcia@example.com");
-			Long usuario2Id = crearUsuario("Pepa", "Gutierrez", "pepa.gutierrez@example.com");
-
 			// Crear Gobernanza Digital
 			Long gobernanzaId = crearGobernanzaDigital();
 
 			// Crear Proyectos Locales y asociarlos a GobernanzaDigital
-			Long proyecto1Id = crearProyectoLocal("Proyecto Vibranium", "Investigación sobre vibranium", gobernanzaId);
-			Long proyecto2Id = crearProyectoLocal("Proyecto Wakanda", "Desarrollo de infraestructura", gobernanzaId);
+			crearProyectoLocal("Proyecto Vibranium", "Investigación sobre vibranium", gobernanzaId);
+			crearProyectoLocal("Proyecto Wakanda", "Desarrollo de infraestructura", gobernanzaId);
 
 			// Crear Gestor de Sugerencias
-			Long gestorId = crearGestorSugerencias();
-
-			// Generar Sugerencias Periódicas
-			generarSugerenciasParaProyectos(gestorId, Arrays.asList(proyecto1Id, proyecto2Id), usuario1Id);
-
-			// Iniciar Trámites con un usuario
-			Long tramite1Id = iniciarTramite(usuario1Id, "REGISTRO");
-			Long tramite2Id = iniciarTramite(usuario2Id, "PERMISO");
-
-			// Consultar estado de los trámites
-			consultarEstadoTramite(tramite1Id);
-			consultarEstadoTramite(tramite2Id);
+			crearGestorSugerencias();
 
 			System.out.println(">>> Datos iniciales creados exitosamente <<<");
 		} catch (Exception e) {
 			System.err.println("Error durante la creación de datos iniciales: " + e.getMessage());
 			e.printStackTrace();
 		}
-	}
-
-	private Long crearUsuario(String nombre, String apellido, String email) {
-		UsuarioDTO usuario = new UsuarioDTO();
-		usuario.setNombre(nombre);
-		usuario.setApellidos(apellido);
-		usuario.setEmail(email);
-		usuario.setRoles(List.of("Usuario"));
-		return usuarioService.create(usuario);
 	}
 
 	private Long crearGobernanzaDigital() {
@@ -113,31 +89,5 @@ public class BackendWakandaGobiernoApplication implements CommandLineRunner {
 		gestor.setEstado("ACTIVO");
 		gestor.setFechaCreacion(new Date());
 		return gestorService.create(gestor);
-	}
-
-	private void generarSugerenciasParaProyectos(Long gestorId, List<Long> proyectosIds, Long usuarioId) {
-		proyectosIds.forEach(proyectoId -> {
-			SugerenciaDTO sugerencia = new SugerenciaDTO();
-			sugerencia.setDescripcion("Sugerencia generada automáticamente para proyecto " + proyectoId);
-			sugerencia.setFechaEnvio(new Date());
-			sugerencia.setEstado("ENVIADA");
-			sugerencia.setUsuarioId(usuarioId);
-			gestorService.visualizarSugerencias(gestorId);
-			System.out.println("Sugerencia creada para Proyecto ID: " + proyectoId);
-		});
-	}
-
-	private Long iniciarTramite(Long usuarioId, String tipo) {
-		TramiteDTO tramite = new TramiteDTO();
-		tramite.setTipo(tipo);
-		tramite.setFechaSolicitud(new Date());
-		Long tramiteId = tramiteService.iniciarTramite(usuarioId, tramite);
-		System.out.println("Trámite iniciado con ID: " + tramiteId + " para Usuario ID: " + usuarioId);
-		return tramiteId;
-	}
-
-	private void consultarEstadoTramite(Long tramiteId) {
-		String estadoTramite = tramiteService.consultarEstado(tramiteId);
-		System.out.println("Estado del Trámite ID " + tramiteId + ": " + estadoTramite);
 	}
 }
